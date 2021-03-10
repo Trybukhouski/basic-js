@@ -1,42 +1,27 @@
 const CustomError = require("../extensions/custom-error");
 
-module.exports = function transform(/* arr */) {
-  throw new CustomError('Not implemented');
-  // remove line with error and write your code here
+module.exports = function transform(arr) {
+  if (!Array.isArray(arr)) throw new Error();
+
+  const newArr = [];
+
+  for (let i = 0; i < arr.length; i++) {
+    switch (arr[i]) {
+      case '--discard-prev':
+        (i !== 0 && arr[i - 2] !== '--discard-next') ? newArr.pop() : newArr;
+        break;
+      case '--double-prev':
+        (i !== 0 && arr[i - 2] !== '--discard-next') ? newArr.push(arr[i - 1]) : newArr;
+        break;
+      case '--discard-next':
+        (i < arr.length - 1) ? i++ : i;
+        break;
+      case '--double-next':
+        (i < arr.length - 1) ? newArr.push(arr[i + 1]) : newArr;
+        break;
+      default:
+        newArr.push(arr[i]);
+    }
+  }
+  return newArr;
 };
-
-// const CustomError = require("../extensions/custom-error");
-
-// module.exports = function transform(arr) {
-//   try {
-//     Array.isArray(arr)
-//   } catch (e) {
-//     throw new Error(e)
-//   }
-
-//   let comand = arr.filter(el => el === '--discard-next' || el === '--discard-prev' || el === '--double-next' || el === '--double-prev');
-
-//   if (comand.length === 0) return arr;
-//   let result = arr;
-//   for (let i = 0; i < comand.length; i++) {
-//     switch (comand[i]) {
-//       case '--discard-next': (result.indexOf(comand[i]) === result.length - 1) ?
-//         result.splice(result.indexOf('--discard-next'), 1) :
-//         result.splice(result.indexOf('--discard-next'), 2);
-//         break;
-//       case '--discard-prev': (arr.indexOf(comand[i]) === 0) ?
-//         result.splice(result.indexOf('--discard-prev'), 1) :
-//         result.splice(result.indexOf('--discard-prev') - 1, 2);
-//         break;
-//       case '--double-next': (result.indexOf(comand[i]) === result.length - 1) ?
-//         result.splice(result.indexOf('--double-next'), 1) :
-//         result[result.indexOf('--double-next')] = result[result.indexOf('--double-next') + 1];
-//         break;
-//       case '--double-prev': (result.indexOf(comand[i]) === 0) ?
-//         result.splice(arr.indexOf('--double-prev'), 1) :
-//         result[result.indexOf('--double-prev')] = result[result.indexOf('--double-prev') - 1];
-//         break;
-//     }
-//   }
-//   return result;
-// };
